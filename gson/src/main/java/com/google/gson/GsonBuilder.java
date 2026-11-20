@@ -762,13 +762,17 @@ public final class GsonBuilder {
       TypeToken<?> typeToken = TypeToken.get(type);
       factories.add(TreeTypeAdapter.newFactoryWithMatchRawType(typeToken, typeAdapter));
     }
+    addTypeAdapterFactory(type, typeAdapter);
+    return this;
+  }
+
+  private void addTypeAdapterFactory(Type type, Object typeAdapter) {
     if (typeAdapter instanceof TypeAdapter<?>) {
       @SuppressWarnings({"unchecked", "rawtypes"})
       TypeAdapterFactory factory =
           TypeAdapters.newFactory(TypeToken.get(type), (TypeAdapter) typeAdapter);
       factories.add(factory);
     }
-    return this;
   }
 
   /** Whether the type has a built-in adapter which cannot be overridden. */
@@ -832,12 +836,7 @@ public final class GsonBuilder {
     if (typeAdapter instanceof JsonDeserializer || typeAdapter instanceof JsonSerializer) {
       hierarchyFactories.add(TreeTypeAdapter.newTypeHierarchyFactory(baseType, typeAdapter));
     }
-    if (typeAdapter instanceof TypeAdapter<?>) {
-      @SuppressWarnings({"unchecked", "rawtypes"})
-      TypeAdapterFactory factory =
-          TypeAdapters.newTypeHierarchyFactory(baseType, (TypeAdapter) typeAdapter);
-      factories.add(factory);
-    }
+    addTypeAdapterFactory(baseType, typeAdapter);
     return this;
   }
 
