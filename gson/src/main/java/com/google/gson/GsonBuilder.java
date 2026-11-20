@@ -740,10 +740,11 @@ public final class GsonBuilder {
   public GsonBuilder registerTypeAdapter(Type type, Object typeAdapter) {
     Objects.requireNonNull(type);
     Objects.requireNonNull(typeAdapter);
-    if (!(typeAdapter instanceof JsonSerializer<?>
-        || typeAdapter instanceof JsonDeserializer<?>
-        || typeAdapter instanceof InstanceCreator<?>
-        || typeAdapter instanceof TypeAdapter<?>)) {
+    boolean isUnsupportedTypeAdapter = !(typeAdapter instanceof JsonSerializer<?>
+            || typeAdapter instanceof JsonDeserializer<?>
+            || typeAdapter instanceof InstanceCreator<?>
+            || typeAdapter instanceof TypeAdapter<?>);
+    if (isUnsupportedTypeAdapter) {
       throw new IllegalArgumentException(
           "Class "
               + typeAdapter.getClass().getName()
