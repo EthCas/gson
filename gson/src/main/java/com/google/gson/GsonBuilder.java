@@ -1040,36 +1040,33 @@ public final class GsonBuilder {
 
   private void addDateTypeAdapters(List<TypeAdapterFactory> factories) {
     TypeAdapterFactory dateAdapterFactory;
-    boolean sqlTypesSupported = SqlTypesSupport.SUPPORTS_SQL_TYPES;
-    TypeAdapterFactory sqlTimestampAdapterFactory = null;
-    TypeAdapterFactory sqlDateAdapterFactory = null;
 
     if (datePattern != null && !datePattern.trim().isEmpty()) {
       dateAdapterFactory = DefaultDateTypeAdapter.DateType.DATE.createAdapterFactory(datePattern);
 
-      if (sqlTypesSupported) {
-        sqlTimestampAdapterFactory =
-            SqlTypesSupport.TIMESTAMP_DATE_TYPE.createAdapterFactory(datePattern);
-        sqlDateAdapterFactory = SqlTypesSupport.DATE_DATE_TYPE.createAdapterFactory(datePattern);
-      }
+      addSqlDateTypeAdapters(factories, datePattern);
     } else if (dateStyle != DateFormat.DEFAULT || timeStyle != DateFormat.DEFAULT) {
       dateAdapterFactory =
           DefaultDateTypeAdapter.DateType.DATE.createAdapterFactory(dateStyle, timeStyle);
 
-      if (sqlTypesSupported) {
-        sqlTimestampAdapterFactory =
-            SqlTypesSupport.TIMESTAMP_DATE_TYPE.createAdapterFactory(dateStyle, timeStyle);
-        sqlDateAdapterFactory =
-            SqlTypesSupport.DATE_DATE_TYPE.createAdapterFactory(dateStyle, timeStyle);
-      }
+      addSqlDateTypeAdapters(factories, dateStyle, timeStyle);
     } else {
       return;
     }
 
     factories.add(dateAdapterFactory);
-    if (sqlTypesSupported) {
-      factories.add(sqlTimestampAdapterFactory);
-      factories.add(sqlDateAdapterFactory);
+  }
+  private void addSqlDateTypeAdapters(List<TypeAdapterFactory> factories, String pattern) {
+    if (SqlTypesSupport.SUPPORTS_SQL_TYPES) {
+      factories.add(SqlTypesSupport.TIMESTAMP_DATE_TYPE.createAdapterFactory(pattern));
+      factories.add(SqlTypesSupport.DATE_DATE_TYPE.createAdapterFactory(pattern));
+    }
+  }
+
+  private void addSqlDateTypeAdapters(List<TypeAdapterFactory> factories, int dateStyle, int timeStyle) {
+    if (SqlTypesSupport.SUPPORTS_SQL_TYPES) {
+      factories.add(SqlTypesSupport.TIMESTAMP_DATE_TYPE.createAdapterFactory(dateStyle, timeStyle));
+      factories.add(SqlTypesSupport.DATE_DATE_TYPE.createAdapterFactory(dateStyle, timeStyle));
     }
   }
 }
